@@ -1,0 +1,36 @@
+local player = game.Players.LocalPlayer
+local trashFolder = workspace.Map.Trash
+
+local function teleportToRandomModel()
+    local models = trashFolder:GetChildren()
+    if #models > 0 then
+        local randomModel = models[math.random(1, #models)]
+        if randomModel:IsA("Model") then
+            local primaryPart = randomModel.PrimaryPart or randomModel:FindFirstChildWhichIsA("BasePart")
+            if primaryPart then
+                player.Character:SetPrimaryPartCFrame(primaryPart.CFrame)
+            else
+                warn("No PrimaryPart found in the model:", randomModel.Name)
+            end
+        else
+            warn("Randomly selected object is not a model:", randomModel.Name)
+        end
+    else
+        warn("No models found in Trash folder")
+    end
+end
+
+local function executeCommand(command)
+    if command == ";trash" then
+        teleportToRandomModel()
+    else
+        warn("Unknown command:", command)
+    end
+end
+
+script.Parent.FocusLost:Connect(function(enterPressed, input)
+    if enterPressed then
+        executeCommand(script.Parent.Text)
+        script.Parent.Text = ""
+    end
+end)
